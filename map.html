@@ -41,10 +41,10 @@ window.addEventListener('message', event => {
     const bounds = new google.maps.LatLngBounds();
     let hasValidPins = false;
 
-    pins.forEach(row => {
-      if (!row.Latitude || !row.Longitude) return; // skip if missing location
-      hasValidPins = true;
-      const position = { lat: parseFloat(row.Latitude), lng: parseFloat(row.Longitude) };
+ normalizedPins.forEach(row => {
+            if (!row['latitude'] || !row['longitude']) return; // skip if missing location
+            hasValidPins = true;
+            const position = { lat: parseFloat(row['latitude']), lng: parseFloat(row['longitude']) };
       const marker = new google.maps.Marker({
         position,
         map,
