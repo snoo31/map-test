@@ -52,15 +52,15 @@
                 strokeWeight: 2,
                 strokeColor: "#FFD700"
               },
-              title: row['Artist Name']
+              title: row['Artist name']
             });
 
             const infoContent = `
               <div>
-                <h3>${row['Artist Name']}</h3>
+                <h3>${row['Artist name']}</h3>
                 <p><strong>Description:</strong> ${row['Description']}</p>
                 <p><strong>Dimensions:</strong> ${row['Dimensions']}</p>
-                <img src="${row['Image']}" alt="${row['Artist Name']}" style="max-width:200px;"/>
+                <img src="${row['Image']}" alt="${row['Artist name']}" style="max-width:200px;"/>
               </div>
             `;
             const infowindow = new google.maps.InfoWindow({ content: infoContent });
