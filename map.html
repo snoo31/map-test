@@ -28,46 +28,58 @@
       window.onload = initMap;
 
       // Listen for messages from Wix
-      window.addEventListener('message', event => {
-        if (event.data && event.data.type === 'pins') {
-          // Remove old markers
-          markers.forEach(marker => marker.setMap(null));
-          markers = [];
+window.addEventListener('message', event => {
+  if (event.data && event.data.type === 'pins') {
+    // Remove old markers
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
 
-          const pins = event.data.pins;
-          console.log('Received pins:', pins); // For debugging
+    const pins = event.data.pins;
+    console.log('Received pins:', pins); // For debugging
 
-          pins.forEach(row => {
-            if (!row.Latitude || !row.Longitude) return; // skip if missing location
-            const marker = new google.maps.Marker({
-              position: { lat: parseFloat(row.Latitude), lng: parseFloat(row.Longitude) },
-              map,
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: "#FFFF00",
-                fillOpacity: 1,
-                strokeWeight: 2,
-                strokeColor: "#FFD700"
-              },
-              title: row['Artist name']
-            });
-            const infoContent = `
-              <div>
-                <h3>${row['Artist name']}</h3>
-                <p><strong>Description:</strong> ${row['Description']}</p>
-                <p><strong>Dimensions:</strong> ${row['Dimensions']}</p>
-                <img src="${row['Image']}" alt="${row['Artist name']}" style="max-width:200px;"/>
-              </div>
-            `;
-            const infowindow = new google.maps.InfoWindow({ content: infoContent });
-            marker.addListener('click', () => {
-              infowindow.open(map, marker);
-            });
-            markers.push(marker);
-          });
-        }
+    // Create a LatLngBounds object
+    const bounds = new google.maps.LatLngBounds();
+    let hasValidPins = false;
+
+    pins.forEach(row => {
+      if (!row.Latitude || !row.Longitude) return; // skip if missing location
+      hasValidPins = true;
+      const position = { lat: parseFloat(row.Latitude), lng: parseFloat(row.Longitude) };
+      const marker = new google.maps.Marker({
+        position,
+        map,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 10,
+          fillColor: "#FFFF00",
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: "#FFD700"
+        },
+        title: row['Artist name']
       });
+      const infoContent = `
+        <div>
+          <h3>${row['Artist name']}</h3>
+          <p><strong>Description:</strong> ${row['Description']}</p>
+          <p><strong>Dimensions:</strong> ${row['Dimensions']}</p>
+          <img src="${row['Image']}" alt="${row['Artist name']}" style="max-width:200px;"/>
+        </div>
+      `;
+      const infowindow = new google.maps.InfoWindow({ content: infoContent });
+      marker.addListener('click', () => {
+        infowindow.open(map, marker);
+      });
+      markers.push(marker);
+      bounds.extend(position); // Extend bounds to include this marker
+    });
+
+    // If there are valid pins, fit the map to their bounds
+    if (hasValidPins) {
+      map.fitBounds(bounds);
+    }
+  }
+});
     </script>
   </body>
 </html>
