@@ -18,6 +18,19 @@
       let map;
       let markers = [];
 
+    const sheetColorsByIndex = [
+  '#FFFF00', // 0: first tab - yellow
+  '#00FF00', // 1: second tab - green
+  '#FF00FF', // 2: third tab - magenta
+  '#00FFFF', // 3: fourth tab - cyan
+  '#FFA500', // 4: fifth tab - orange
+  // ...add more as needed
+];
+const defaultColor = '#FFD700'; // fallback color
+
+// In your marker creation loop:
+const color = sheetColorsByIndex[row.SheetIndex] || defaultColor;
+      
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 4,
@@ -37,23 +50,25 @@
           let hasValidPins = false;
 
           pins.forEach(row => {
-            if (!row.Latitude || !row.Longitude) return; // skip if missing location
-            hasValidPins = true;
-            const position = { lat: parseFloat(row.Latitude), lng: parseFloat(row.Longitude) };
+  if (!row.Latitude || !row.Longitude) return;
+  const position = { lat: parseFloat(row.Latitude), lng: parseFloat(row.Longitude) };
 
-            const marker = new google.maps.Marker({
-              position,
-              map,
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: "#FFFF00",
-                fillOpacity: 1,
-                strokeWeight: 2,
-                strokeColor: "#FFD700"
-              },
-              title: row['Artist Name']
-            });
+  // Use the color for this tab's position
+  const color = sheetColorsByIndex[row.SheetIndex] || defaultColor;
+
+  const marker = new google.maps.Marker({
+    position,
+    map,
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 10,
+      fillColor: color,
+      fillOpacity: 1,
+      strokeWeight: 2,
+      strokeColor: "#333"
+    },
+    title: row['Artist Name']
+  });
 
             const infoContent = `
               <div>
