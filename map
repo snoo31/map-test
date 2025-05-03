@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>live map</title>
+  <style>html,body,#map{height:100%;margin:0;padding:0}</style>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBu-RMHi3fECS0AO10ro81dtC1tWIspjJM"></script>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    let map, markers = [];
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 0, lng: 0 }, zoom: 2
+      });
+      fetchAndDraw();
+      setInterval(fetchAndDraw, 30000);
+    }
+
+    async function fetchAndDraw() {
+      const res  = await fetch('https://script.google.com/macros/s/AKfycbxxSH5LWmmPKFOdY-TCCusyvaoeiz_NpW_6gCCOQMfWpSiRXHsx-bFkniUIlXSX2OIRaQ/exec');
+      const data = await res.json();
+      console.log(data.features);  // ← check this in devtools
+
+      // clear old pins
+      markers.forEach(m=>m.setMap(null));
+      markers = data.features.map(f => {
+        const [lng, lat] = f.geometry.coordinates;
+        const p = f.properties;
+
+        // create marker
+        const m = new google.maps.Marker({
+          position: { lat, lng },
+          map,
+          title: p.work   // use work as the title
+        });
+
+        // assemble popup using your headers
+        const infoHtml = `
+          <div>
+            <h3>${p.work}</h3>
+            <p><strong>Artist:</strong> ${p.artist||''}</p>
+            ${p.photo
+              ? `<img src="${p.photo}" style="max-width:200px">`
+              : ''}
+          </div>`;
+
+        const iw = new google.maps.InfoWindow({ content: infoHtml });
+        m.addListener('click', ()=> iw.open(map, m));
+        return m;
+      });
+    }
+
+    window.onload = initMap;
+  </script>
+</body>
+</html>
