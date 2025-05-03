@@ -41,10 +41,10 @@ window.addEventListener('message', event => {
     const bounds = new google.maps.LatLngBounds();
     let hasValidPins = false;
 
- normalizedPins.forEach(row => {
-            if (!row['latitude'] || !row['longitude']) return; // skip if missing location
-            hasValidPins = true;
-            const position = { lat: parseFloat(row['latitude']), lng: parseFloat(row['longitude']) };
+    pins.forEach(row => {
+      if (!row.Latitude || !row.Longitude) return; // skip if missing location
+      hasValidPins = true;
+      const position = { lat: parseFloat(row.Latitude), lng: parseFloat(row.Longitude) };
       const marker = new google.maps.Marker({
         position,
         map,
@@ -58,14 +58,14 @@ window.addEventListener('message', event => {
         },
         title: row['Artist name']
       });
-   const infoContent = `
-  <div>
-    <h3>${row['artist name']}</h3>
-    <p><strong>Description:</strong> ${row['description']}</p>
-    <p><strong>Dimensions:</strong> ${row['dimensions']}</p>
-    <img src="${row['image']}" alt="${row['artist name']}" style="max-width:200px;"/>
-  </div>
-`;
+      const infoContent = `
+        <div>
+          <h3>${row['Artist name']}</h3>
+          <p><strong>Description:</strong> ${row['Description']}</p>
+          <p><strong>Dimensions:</strong> ${row['Dimensions']}</p>
+          <img src="${row['Image']}" alt="${row['Artist name']}" style="max-width:200px;"/>
+        </div>
+      `;
       const infowindow = new google.maps.InfoWindow({ content: infoContent });
       marker.addListener('click', () => {
         infowindow.open(map, marker);
